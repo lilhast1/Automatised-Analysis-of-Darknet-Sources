@@ -56,5 +56,6 @@ def train_classifier(model, train_loader, val_loader, epochs=10, lr=1e-4, device
     plt.subplot(1,2,1); plt.plot(train_losses, label='train'); plt.plot(val_losses, label='val'); plt.title('Loss'); plt.legend()
     plt.subplot(1,2,2); plt.plot(train_accs, label='train'); plt.plot(val_accs, label='val'); plt.title('Accuracy'); plt.legend()
     plt.show()
-
+    plt.savefig('loss_acc.png')
+	
     torch.save(model.state_dict(), "classifier.pt")

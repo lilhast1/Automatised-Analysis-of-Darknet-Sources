@@ -9,9 +9,13 @@ from transformers import AutoTokenizer
 tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 
 def clean_html(file_path):
-    html = open(file_path, encoding="utf-8", errors="ignore").read()
-    text = BeautifulSoup(html, "html.parser").get_text(separator=" ")
-    text = re.sub(r"\s+", " ", text).strip()
+    with open(file_path, encoding="utf-8", errors="ignore") as f:
+        html = f.read()
+    soup = BeautifulSoup(html, "html.parser")
+    for element in soup(["script", "style", "noscript"]):
+        element.extract()
+    text = soup.get_text(separator=" ")
+    text = re.sub(r"\s+", " ", text).strip().lower()
     return text
 
 def tokenize_text(text, max_len=512):
