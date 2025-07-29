@@ -1,9 +1,11 @@
 # pseudo_label.py
 import torch, csv
+import torch.nn as nn
 from torch.utils.data import DataLoader
 from data_loader import HTMLDataset
-from models import CNNMambaClassifier, LinearAE_CNN_Mamba, AEMambaClassifier, ConvAutoencoder
+from models import CNNMambaClassifier, LinearAE_CNN_Mamba, AEMambaClassifier, ConvAutoencoder, SparseAE_CNN_Mamba
 import torch.nn.functional as F
+import tqdm
 
 MODEL = "CNN"
 MODEL_PATH = "classifier.pt"
@@ -14,6 +16,7 @@ BATCH_SIZE = 16
 
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
+criterion = nn.CrossEntropyLoss()
 
 # 1. Load model
 if MODEL == "CNN":
@@ -32,6 +35,16 @@ elif MODEL == "LinAE":
 		num_classes=4,
 		seq_len=512
 	)
+elif MODEL == "Sparse":
+    model = SparseAE_CNN_Mamba(
+		vocab_size=30522,
+		embed_dim=256,
+		latent_dim=128,
+		cnn_out=128,
+		num_classes=4,
+		seq_len=512,
+		sparsity_weight=1e-3
+	).to(device)
 else:
 	ae = ConvAutoencoder(
 		vocab_size=30522,
@@ -55,20 +68,25 @@ loader = DataLoader(dataset, batch_size=BATCH_SIZE)
 # 3. Generate pseudo-labels
 pseudo_labels = []
 with torch.no_grad():
-    for inputs, _ in loader:
-        inputs = inputs.to(device)
-        logits = model(inputs)
+    for batch in tqdm(loader, desc="Generating pseudo-labels"):
+        batch = batch.to(device)
+        logits, _, _ = model(batch)  # only need logits for labeling
+
         probs = F.softmax(logits, dim=1)
         max_probs, preds = probs.max(dim=1)
 
-        for path, conf, pred in zip(unlabeled_files, max_probs.cpu(), preds.cpu()):
-            if conf >= CONF_THRESHOLD:
-                pseudo_labels.append((path, pred.item(), conf.item()))
+        for prob, pred in zip(max_probs.cpu(), preds.cpu()):
+            if prob.item() >= confidence_threshold:
+                pseudo_labels.append({"label": int(pred.item()), "confidence": float(prob.item())})
+            else:
+                pseudo_labels.append({"label": None, "confidence": float(prob.item())})
 
-# 4. Save high-confidence pseudo-labels
-with open(OUTPUT_CSV, "w", newline="", encoding="utf-8") as f:
-    writer = csv.writer(f)
-    writer.writerow(["file", "label", "confidence"])
-    writer.writerows(pseudo_labels)
+# -------------------------------
+# Save pseudo-labeled data
+# -------------------------------
+os.makedirs("pseudo_labels", exist_ok=True)
+with open("pseudo_labels/unlabeled_with_pseudo_labels.json", "w") as f:
+    json.dump(pseudo_labels, f, indent=2)
 
-print(f"Saved {len(pseudo_labels)} pseudo-labeled files.")
+print(f"Generated {len(pseudo_labels)} pseudo-label entries.")
+print("High-confidence entries:", sum(1 for x in pseudo_labels if x['label'] is not None))

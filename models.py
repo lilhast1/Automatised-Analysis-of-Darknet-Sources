@@ -119,3 +119,64 @@ class LinearAE_CNN_Mamba(nn.Module):
         x = x.permute(0,2,1)
         x = self.mamba(x).mean(dim=1)
         return self.fc(x)
+
+class SparseLinearAE(nn.Module):
+    def __init__(self, embed_dim=256, latent_dim=128, sparsity_weight=1e-3):
+        super().__init__()
+        self.encoder = nn.Linear(embed_dim, latent_dim)
+        self.decoder = nn.Linear(latent_dim, embed_dim)
+        self.sparsity_weight = sparsity_weight
+
+    def forward(self, x):
+        # x: (B, L, D)
+        latent = torch.relu(self.encoder(x))  # (B, L, latent_dim)
+        recon = self.decoder(latent)          # (B, L, D)
+
+        # Sparsity loss (L1 on activations)
+        sparsity_loss = self.sparsity_weight * latent.abs().mean()
+
+        return latent, recon, sparsity_loss
+
+
+class SparseAE_CNN_Mamba(nn.Module):
+    def __init__(
+        self,
+        vocab_size=30522,
+        embed_dim=256,
+        latent_dim=128,
+        cnn_out=128,
+        num_classes=4,
+        seq_len=512,
+        sparsity_weight=1e-3
+    ):
+        super().__init__()
+        self.embed = nn.Embedding(vocab_size, embed_dim)
+        self.ae = SparseLinearAE(embed_dim, latent_dim, sparsity_weight)
+
+        self.conv = nn.Conv1d(latent_dim, cnn_out, kernel_size=5, padding=2)
+        self.pool = nn.AdaptiveMaxPool1d(64)
+
+        self.mamba = Mamba(
+            d_model=cnn_out,
+            d_state=64,
+            d_conv=4,
+            expand=2
+        )
+
+        self.fc = nn.Linear(cnn_out, num_classes)
+
+    def forward(self, x):
+        x = self.embed(x)  # (B, L, D)
+        latent, recon, sparsity_loss = self.ae(x)
+
+        # CNN expects (B, C, L)
+        cnn_in = latent.transpose(1, 2)
+        features = self.pool(torch.relu(self.conv(cnn_in)))
+
+        # Mamba expects (B, L, D)
+        features = features.transpose(1, 2)
+        features = self.mamba(features)
+
+        pooled = features.mean(dim=1)
+        out = self.fc(pooled)
+        return out, recon, sparsity_loss
