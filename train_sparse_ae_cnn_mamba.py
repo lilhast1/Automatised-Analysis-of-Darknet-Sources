@@ -6,17 +6,35 @@ import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 from models import SparseAE_CNN_Mamba  # import from your models.py
+import pandas as pd
+from data_loader import HTMLDataset
+from sklearn.model_selection import train_test_split
 
-# -------------------------------
-# Dummy Dataset Example
-# Replace with your HTML text dataset
-# -------------------------------
-class DummyTextDataset(Dataset):
-    def __init__(self, vocab_size=30522, seq_len=512, size=1000, num_classes=4):
-        self.data = torch.randint(0, vocab_size, (size, seq_len))
-        self.labels = torch.randint(0, num_classes, (size,))
-    def __len__(self): return len(self.data)
-    def __getitem__(self, idx): return self.data[idx], self.labels[idx]
+csv_path = 'labeled.csv' #
+df = pd.read_csv(csv_path)
+label_map = {
+    'Irrelevant': 0,
+    'Attack as a service': 1,
+    'Attacker as a service': 2,
+    'Malware as a service': 3
+}
+
+df['label_numeric'] = df['label'].map(label_map)
+file_paths = df['file'].tolist()
+numeric_labels = df['label_numeric'].tolist()
+
+train_df, val_df = train_test_split(
+    df,
+    test_size=0.2,
+    random_state=42, 
+    stratify=df['label_numeric']
+)
+
+train_paths = train_df['file'].tolist()
+train_labels = train_df['label_numeric'].tolist()
+
+val_paths = val_df['file'].tolist()
+val_labels = val_df['label_numeric'].tolist()
 
 # -------------------------------
 # Hyperparameters
@@ -28,14 +46,15 @@ batch_size = 4      # keep small for 6GB GPU
 epochs = 5
 lr = 1e-4
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+max_len = 512
 # -------------------------------
 # Data Loaders
 # -------------------------------
-train_dataset = DummyTextDataset(size=5000)
-val_dataset   = DummyTextDataset(size=1000)
-train_loader  = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-val_loader    = DataLoader(val_dataset, batch_size=batch_size)
+
+train_dataset = HTMLDataset(file_paths=train_paths, labels=train_labels, max_len=max_len)
+val_dataset   = HTMLDataset(file_paths=val_paths, labels=val_labels, max_len=max_len)
+train_loader  = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=4, pin_memory=True)
+val_loader    = DataLoader(val_dataset, batch_size=batch_size, num_workers=4, pin_memory=True)
 
 # -------------------------------
 # Model, Optimizer, Criterion
