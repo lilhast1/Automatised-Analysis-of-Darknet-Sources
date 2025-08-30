@@ -9,6 +9,7 @@ from transformers import AutoTokenizer
 tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 
 def clean_html(file_path):
+    #print(f'cleaning: {file_path}')
     with open(file_path, encoding="utf-8", errors="ignore") as f:
         html = f.read()
     soup = BeautifulSoup(html, "html.parser")
@@ -46,4 +47,5 @@ class HTMLDataset(Dataset):
             label = self.labels[idx]
             return input_ids, torch.tensor(label, dtype=torch.long)
         else:
-            return input_ids, torch.tensor(-1, dtype=torch.long)
+            return input_ids, path
+            #return input_ids#, torch.tensor(-1, dtype=torch.long)

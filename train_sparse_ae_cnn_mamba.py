@@ -10,7 +10,7 @@ import pandas as pd
 from data_loader import HTMLDataset
 from sklearn.model_selection import train_test_split
 
-csv_path = 'labeled.csv' #
+csv_path = 'labeled_unbalanced_final.csv' #
 df = pd.read_csv(csv_path)
 label_map = {
     'Irrelevant': 0,
@@ -25,7 +25,7 @@ numeric_labels = df['label_numeric'].tolist()
 
 train_df, val_df = train_test_split(
     df,
-    test_size=0.2,
+    test_size=0.6,
     random_state=42, 
     stratify=df['label_numeric']
 )
@@ -146,7 +146,9 @@ plt.xlabel("Epochs")
 plt.ylabel("Loss")
 plt.legend()
 plt.title("Training and Validation Loss")
+plt.savefig("loss_plot.png") 
 plt.show()
+
 
 plt.figure(figsize=(10,5))
 plt.plot(val_accuracies, label="Val Accuracy")
@@ -154,4 +156,5 @@ plt.xlabel("Epochs")
 plt.ylabel("Accuracy")
 plt.legend()
 plt.title("Validation Accuracy")
+plt.savefig("accuracy_plot.png")
 plt.show()
