@@ -1,0 +1,162 @@
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Install the latest PowerShell for new features and improvements! https://aka.ms/PSWindows
+
+PS F:\dataset> wsl
+Welcome to Ubuntu 22.04.5 LTS (GNU/Linux 6.6.87.2-microsoft-standard-WSL2 x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+ System information as of Wed Sep 10 11:20:08 CEST 2025
+
+  System load:  0.72                Processes:             59
+  Usage of /:   1.9% of 1006.85GB   Users logged in:       0
+  Memory usage: 5%                  IPv4 address for eth0: 172.24.180.229
+  Swap usage:   0%
+
+ * Strictly confined Kubernetes makes edge and IoT secure. Learn how MicroK8s
+   just raised the bar for easy, resilient and secure K8s cluster deployment.
+
+   https://ubuntu.com/engage/secure-kubernetes-at-the-edge
+
+This message is shown once a day. To disable it please create the
+/home/pingvin/.hushlogin file.
+pingvin@DESKTOP-84F9M51:/mnt/f/dataset$ code Automatised-Analysis-of-Darknet-Sources/
+pingvin@DESKTOP-84F9M51:/mnt/f/dataset$ source mamba-env/bin/activate
+(mamba-env) pingvin@DESKTOP-84F9M51:/mnt/f/dataset$ python3 Automatised-Analysis-of-Darknet-Sources/train_bert.py
+Using device: cuda
+Loading data from final.csv...
+Total samples: 10636
+Train samples: 6381
+Validation samples: 4255
+model.safetensors: 100%|█████████████████████████████████████████████████████████████| 440M/440M [00:48<00:00, 9.09MB/s]
+Model: BERTClassifier(
+  (bert): BertModel(
+    (embeddings): BertEmbeddings(
+      (word_embeddings): Embedding(30522, 768, padding_idx=0)
+      (position_embeddings): Embedding(512, 768)
+      (token_type_embeddings): Embedding(2, 768)
+      (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+      (dropout): Dropout(p=0.1, inplace=False)
+    )
+    (encoder): BertEncoder(
+      (layer): ModuleList(
+        (0-11): 12 x BertLayer(
+          (attention): BertAttention(
+            (self): BertSdpaSelfAttention(
+              (query): Linear(in_features=768, out_features=768, bias=True)
+              (key): Linear(in_features=768, out_features=768, bias=True)
+              (value): Linear(in_features=768, out_features=768, bias=True)
+              (dropout): Dropout(p=0.1, inplace=False)
+            )
+            (output): BertSelfOutput(
+              (dense): Linear(in_features=768, out_features=768, bias=True)
+              (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+              (dropout): Dropout(p=0.1, inplace=False)
+            )
+          )
+          (intermediate): BertIntermediate(
+            (dense): Linear(in_features=768, out_features=3072, bias=True)
+            (intermediate_act_fn): GELUActivation()
+          )
+          (output): BertOutput(
+            (dense): Linear(in_features=3072, out_features=768, bias=True)
+            (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise_affine=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+        )
+      )
+    )
+    (pooler): BertPooler(
+      (dense): Linear(in_features=768, out_features=768, bias=True)
+      (activation): Tanh()
+    )
+  )
+  (classifier): Sequential(
+    (0): Dropout(p=0.1, inplace=False)
+    (1): Linear(in_features=768, out_features=4, bias=True)
+  )
+)
+Number of parameters: 109485316
+              precision    recall  f1-score   support
+
+           0     0.9904    0.9918    0.9911      2078
+           1     0.8333    0.7692    0.8000        26
+           2     0.7949    0.8732    0.8322        71
+           3     0.9995    0.9957    0.9976      2080
+
+    accuracy                         0.9904      4255
+   macro avg     0.9045    0.9075    0.9052      4255
+weighted avg     0.9906    0.9904    0.9905      4255
+
+Epoch 1/5:
+  Train Loss: 0.1923
+  Val Loss: 0.0431, Accuracy: 0.9904, Precision: 0.9906, Recall: 0.9904, F1-score: 0.9905
+  Saved new best model with F1-score: 0.9905
+              precision    recall  f1-score   support
+
+           0     0.9980    0.9846    0.9913      2078
+           1     0.8750    0.8077    0.8400        26
+           2     0.7419    0.9718    0.8415        71
+           3     0.9952    0.9990    0.9971      2080
+
+    accuracy                         0.9904      4255
+   macro avg     0.9025    0.9408    0.9175      4255
+weighted avg     0.9916    0.9904    0.9907      4255
+
+Epoch 2/5:
+  Train Loss: 0.0400
+  Val Loss: 0.0302, Accuracy: 0.9904, Precision: 0.9916, Recall: 0.9904, F1-score: 0.9907
+  Saved new best model with F1-score: 0.9907
+              precision    recall  f1-score   support
+
+           0     0.9976    0.9923    0.9949      2078
+           1     0.8621    0.9615    0.9091        26
+           2     0.8649    0.9014    0.8828        71
+           3     0.9971    0.9995    0.9983      2080
+
+    accuracy                         0.9941      4255
+   macro avg     0.9304    0.9637    0.9463      4255
+weighted avg     0.9943    0.9941    0.9942      4255
+
+Epoch 3/5:
+  Train Loss: 0.0209
+  Val Loss: 0.0225, Accuracy: 0.9941, Precision: 0.9943, Recall: 0.9941, F1-score: 0.9942
+  Saved new best model with F1-score: 0.9942
+              precision    recall  f1-score   support
+
+           0     0.9961    0.9913    0.9937      2078
+           1     0.7059    0.9231    0.8000        26
+           2     0.8955    0.8451    0.8696        71
+           3     0.9962    0.9990    0.9976      2080
+
+    accuracy                         0.9922      4255
+   macro avg     0.8984    0.9396    0.9152      4255
+weighted avg     0.9927    0.9922    0.9924      4255
+
+Epoch 4/5:
+  Train Loss: 0.0173
+  Val Loss: 0.0246, Accuracy: 0.9922, Precision: 0.9927, Recall: 0.9922, F1-score: 0.9924
+              precision    recall  f1-score   support
+
+           0     0.9952    0.9952    0.9952      2078
+           1     0.8571    0.9231    0.8889        26
+           2     0.9077    0.8310    0.8676        71
+           3     0.9976    0.9995    0.9986      2080
+
+    accuracy                         0.9941      4255
+   macro avg     0.9394    0.9372    0.9376      4255
+weighted avg     0.9941    0.9941    0.9941      4255
+
+Epoch 5/5:
+  Train Loss: 0.0149
+  Val Loss: 0.0213, Accuracy: 0.9941, Precision: 0.9941, Recall: 0.9941, F1-score: 0.9941
+
+Training finished!
+Best Validation F1-score: 0.9942
+Saving plots to results_bert_classifier...
+Plots saved successfully.
+(mamba-env) pingvin@DESKTOP-84F9M51:/mnt/f/dataset$

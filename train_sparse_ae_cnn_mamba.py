@@ -5,12 +5,12 @@ import torch.nn.functional as F
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
-from models import SparseAE_CNN_Mamba  # import from your models.py
+from models import SparseAE_CNN_Mamba  
 import pandas as pd
 from data_loader import HTMLDataset
 from sklearn.model_selection import train_test_split
 
-csv_path = 'labeled_unbalanced_final.csv' #
+csv_path = 'labeled_unbalanced_final.csv' 
 df = pd.read_csv(csv_path)
 label_map = {
     'Irrelevant': 0,
@@ -42,7 +42,7 @@ val_labels = val_df['label_numeric'].tolist()
 vocab_size = 30522
 seq_len = 512
 num_classes = 4
-batch_size = 4      # keep small for 6GB GPU
+batch_size = 4      # 6G VRAM
 epochs = 5
 lr = 1e-4
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -86,15 +86,11 @@ for epoch in range(epochs):
         optimizer.zero_grad()
         logits, recon, sparsity_loss = model(inputs)
 
-        # Classification loss
         loss_cls = criterion(logits, labels)
 
-        # Reconstruction loss
-        # Use embeddings as target
         emb_target = model.embed(inputs).detach()
         loss_recon = F.mse_loss(recon, emb_target)
 
-        # Total loss
         loss = loss_cls + 0.1*loss_recon + sparsity_loss
         loss.backward()
         optimizer.step()
@@ -132,7 +128,7 @@ for epoch in range(epochs):
     print(f"Epoch {epoch+1}: Train Loss {avg_train_loss:.4f} | Val Loss {avg_val_loss:.4f} | Val Acc {val_accuracy:.4f}")
 
     # -------------------------------
-    # Save checkpoint
+    # Save epoch
     # -------------------------------
     torch.save(model.state_dict(), f"sparse_ae_cnn_mamba_epoch{epoch+1}.pth")
 

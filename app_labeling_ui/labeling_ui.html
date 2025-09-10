@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HTML Labeling Tool</title>
+    <style>
+        body { font-family: sans-serif; margin: 2em; }
+        #html-viewer { border: 1px solid #ccc; }
+        .label-btn { margin: 5px; padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h1>HTML Content Labeling Tool</h1>
+
+    <div>
+        <p><strong>Current File:</strong> <span id="current-file"></span></p>
+        <p><strong>Progress:</strong> <span id="progress">0</span> / <span id="total-files">0</span></p>
+    </div>
+
+    <iframe id="html-viewer" width="100%" height="600px"></iframe>
+
+    <div>
+        <h2>Assign Label</h2>
+        <button class="label-btn" data-label="Irrelevant">Irrelevant</button>
+        <button class="label-btn" data-label="Malware as a service">Malware as a service</button>
+        <button class="label-btn" data-label="Attack as a service">Attack as a service</button>
+        <button class="label-btn" data-label="Attacker as a service">Attacker as a service</button>
+    </div>
+
+    <hr>
+
+    <button id="export-csv">Export Labels to CSV</button>
+    <button id="skip-file">Skip File</button>
+
+    <script src="file_list.js"></script>
+    <script src="labeling_script.js"></script>
+
+</body>
+</html>

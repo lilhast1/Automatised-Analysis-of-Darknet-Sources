@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from mamba_ssm import Mamba
+from transformers import AutoModel
 
 # ---------------------------
 # Linear Autoencoder
@@ -120,6 +121,9 @@ class LinearAE_CNN_Mamba(nn.Module):
         x = self.mamba(x).mean(dim=1)
         return self.fc(x)
 
+# ---------------------------
+# Sparse Linear Autoencoder
+# ---------------------------
 class SparseLinearAE(nn.Module):
     def __init__(self, embed_dim=256, latent_dim=128, sparsity_weight=1e-3):
         super().__init__()
@@ -137,7 +141,9 @@ class SparseLinearAE(nn.Module):
 
         return latent, recon, sparsity_loss
 
-
+# ---------------------------
+# Sparse Linear Autoencoder -> CNN -> Mamba
+# ---------------------------
 class SparseAE_CNN_Mamba(nn.Module):
     def __init__(
         self,
@@ -180,3 +186,51 @@ class SparseAE_CNN_Mamba(nn.Module):
         pooled = features.mean(dim=1)
         out = self.fc(pooled)
         return out, recon, sparsity_loss
+
+# ---------------------------
+# Mamba blocks
+# ---------------------------
+class MambaClassifier(nn.Module):
+    def __init__(self, d_model: int, n_layers: int, vocab_size: int, num_classes: int,  max_len: int = 512):
+        super().__init__()
+        self.max_len = max_len
+        self.embedding = nn.Embedding(vocab_size, d_model)
+        self.mamba_layers = nn.ModuleList([Mamba(d_model) for _ in range(n_layers)])
+        
+        self.global_pool = nn.AdaptiveAvgPool1d(1) 
+        
+        self.classifier = nn.Sequential(
+            nn.Linear(d_model, d_model // 2),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(d_model // 2, num_classes)
+        )
+
+    def forward(self, input_ids):        
+        x = self.embedding(input_ids)
+        for layer in self.mamba_layers:
+            x = layer(x) # (batch_size, sequence_length, d_model)
+        x = x.permute(0, 2, 1) 
+        x = self.global_pool(x).squeeze(-1) # (batch_size, d_model)
+        logits = self.classifier(x) # (batch_size, num_classes)
+        return logits
+
+
+# ---------------------------
+# BERT finetune
+# ---------------------------
+class BERTClassifier(nn.Module):
+    def __init__(self, model_name: str = "bert-base-uncased", num_classes: int = 4, dropout: float = 0.1):
+        super().__init__()
+        self.bert = AutoModel.from_pretrained(model_name)
+        self.classifier = nn.Sequential(
+            nn.Dropout(dropout),
+            nn.Linear(self.bert.config.hidden_size, num_classes)
+        )
+
+    def forward(self, input_ids, attention_mask=None):
+        outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask, return_dict=True)
+        pooled_output = outputs.pooler_output # (batch_size, hidden_size)
+
+        logits = self.classifier(pooled_output) # (batch_size, num_classes)
+        return logits

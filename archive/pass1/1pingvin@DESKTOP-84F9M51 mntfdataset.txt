@@ -1,0 +1,64 @@
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Install the latest PowerShell for new features and improvements! https://aka.ms/PSWindows
+
+PS C:\Users\hasto> wsl
+Welcome to Ubuntu 22.04.5 LTS (GNU/Linux 6.6.87.2-microsoft-standard-WSL2 x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+ System information as of Fri Aug 29 09:16:18 CEST 2025
+
+  System load:  0.0                 Processes:             59
+  Usage of /:   1.9% of 1006.85GB   Users logged in:       0
+  Memory usage: 4%                  IPv4 address for eth0: 172.24.180.229
+  Swap usage:   0%
+
+ * Strictly confined Kubernetes makes edge and IoT secure. Learn how MicroK8s
+   just raised the bar for easy, resilient and secure K8s cluster deployment.
+
+   https://ubuntu.com/engage/secure-kubernetes-at-the-edge
+
+This message is shown once a day. To disable it please create the
+/home/pingvin/.hushlogin file.
+pingvin@DESKTOP-84F9M51:/mnt/c/Users/hasto$ cd mnt
+-bash: cd: mnt: No such file or directory
+pingvin@DESKTOP-84F9M51:/mnt/c/Users/hasto$ cd /mnt
+pingvin@DESKTOP-84F9M51:/mnt$ cd f
+pingvin@DESKTOP-84F9M51:/mnt/f$ cd dataset/
+pingvin@DESKTOP-84F9M51:/mnt/f/dataset$ code Automatised-Analysis-of-Darknet-Sources/
+pingvin@DESKTOP-84F9M51:/mnt/f/dataset$ source mamba-env/bin/activate
+(mamba-env) pingvin@DESKTOP-84F9M51:/mnt/f/dataset$  python3 Automatised-Analysis-of-Darknet-Sources/train_sparse_ae_cnn_mamba.py
+Epoch 1/5: 100%|████████████████████████████████████████████████████████████████████| 3367/3367 [09:46<00:00,  5.74it/s]
+Epoch 1: Train Loss 0.0836 | Val Loss 0.0382 | Val Acc 0.9929
+Epoch 2/5: 100%|████████████████████████████████████████████████████████████████████| 3367/3367 [04:03<00:00, 13.84it/s]
+Epoch 2: Train Loss 0.0397 | Val Loss 0.0262 | Val Acc 0.9935
+Epoch 3/5: 100%|████████████████████████████████████████████████████████████████████| 3367/3367 [04:00<00:00, 13.98it/s]
+Epoch 3: Train Loss 0.0303 | Val Loss 0.0236 | Val Acc 0.9950
+Epoch 4/5: 100%|████████████████████████████████████████████████████████████████████| 3367/3367 [04:03<00:00, 13.81it/s]
+Epoch 4: Train Loss 0.0266 | Val Loss 0.0632 | Val Acc 0.9950
+Epoch 5/5: 100%|████████████████████████████████████████████████████████████████████| 3367/3367 [04:04<00:00, 13.77it/s]
+Epoch 5: Train Loss 0.0233 | Val Loss 0.0214 | Val Acc 0.9950
+/mnt/f/dataset/Automatised-Analysis-of-Darknet-Sources/train_sparse_ae_cnn_mamba.py:150: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+  plt.show()
+/mnt/f/dataset/Automatised-Analysis-of-Darknet-Sources/train_sparse_ae_cnn_mamba.py:160: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+  plt.show()
+(mamba-env) pingvin@DESKTOP-84F9M51:/mnt/f/dataset$ python3 Automatised-Analysis-of-Darknet-Sources/pseudo_label.py
+Generating pseudo-labels: 100%|███████████████████████████████████████████████████| 2502/2502 [1:09:17<00:00,  1.66s/it]
+Saved 34339 high-confidence pseudo-labels to pseudo_labels/pseudo_labels.csv
+Generated 40019 total pseudo-label entries (including low confidence).
+High-confidence entries: 34339
+(mamba-env) pingvin@DESKTOP-84F9M51:/mnt/f/dataset$ ls
+Automatised-Analysis-of-Darknet-Sources  firstpass               labeling_ui.html     secondpass
+README.md                                firstpass.csv           loss_plot.png        sparse_ae_cnn_mamba_epoch1.pth
+Untitled-1.ipynb                         generate_files.py       mamba                sparse_ae_cnn_mamba_epoch2.pth
+accuracy_plot.png                        hotlabel.ipynb          mamba-env            sparse_ae_cnn_mamba_epoch3.pth
+analiza.ipynb                            html                    metadata.csv         sparse_ae_cnn_mamba_epoch4.pth
+archive                                  index.html              pseudo_labels        sparse_ae_cnn_mamba_epoch5.pth
+causal-conv1d                            labeled.csv             pseudo_labels1.json  style.css
+engpass                                  labeled_unbalanced.csv  pseudolabels.csv     tags.txt
+file_list.js                             labeling_script.js      script.js
+(mamba-env) pingvin@DESKTOP-84F9M51:/mnt/f/dataset$

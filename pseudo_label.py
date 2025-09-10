@@ -1,4 +1,3 @@
-# pseudo_label.py
 import torch, csv
 import torch.nn as nn
 from torch.utils.data import DataLoader
@@ -31,7 +30,7 @@ if MODEL == "CNN":
 	)
 elif MODEL == "LinAE":
 	model = LinearAE_CNN_Mamba(
-		vocab_size=30522,   # for BERT tokenizer
+		vocab_size=30522,   
 		embed_dim=256,
 		ae_hidden_dim=1024,
 		cnn_out=128,
@@ -81,7 +80,6 @@ high_confidence_pseudo_labels = [] # For the CSV output (only high confidence)
 
 with torch.no_grad():
     for input_ids_batch, paths_batch in tqdm(loader, desc="Generating pseudo-labels"):
-        # input_ids_batch is a tensor, paths_batch is a list of strings
         input_ids_batch = input_ids_batch.to(device)
 
         logits, _, _ = model(input_ids_batch) # only need logits for labeling
@@ -89,13 +87,12 @@ with torch.no_grad():
         probs = F.softmax(logits, dim=1)
         max_probs, preds = probs.max(dim=1)
 
-        # Iterate through the predictions for the current batch
         for i in range(len(preds)):
             file_path = paths_batch[i]
             prob = max_probs[i].item()
             pred = preds[i].item()
 
-            # Store all predictions for the JSON file (including low confidence ones as None)
+            # Store all predictions for the JSON file 
             if prob >= CONF_THRESHOLD:
                 all_pseudo_labels_for_json.append({"file": file_path, "label": int(pred), "confidence": float(prob)})
             else:
@@ -104,19 +101,19 @@ with torch.no_grad():
             # Only store high-confidence predictions for the CSV file
             if prob >= CONF_THRESHOLD:
                 high_confidence_pseudo_labels.append({"file": file_path, "label": int(pred), "confidence": float(prob)})
+
+
 # -------------------------------
 # Save pseudo-labeled data
 # -------------------------------
 
 os.makedirs("pseudo_labels", exist_ok=True)
 
-# Save all predictions (including low confidence ones as None) to JSON
 with open("pseudo_labels/unlabeled_with_all_pseudo_labels.json", "w") as f:
     json.dump(all_pseudo_labels_for_json, f, indent=2)
 
-# Save only high-confidence predictions to a CSV file
 output_csv_path = os.path.join("pseudo_labels", OUTPUT_CSV)
-if high_confidence_pseudo_labels: # Only write if there's data
+if high_confidence_pseudo_labels: 
     df_pseudo = pd.DataFrame(high_confidence_pseudo_labels)
     df_pseudo.to_csv(output_csv_path, index=False)
     print(f"Saved {len(high_confidence_pseudo_labels)} high-confidence pseudo-labels to {output_csv_path}")

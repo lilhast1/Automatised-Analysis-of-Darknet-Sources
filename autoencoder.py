@@ -34,7 +34,7 @@ class TextAutoencoder(nn.Module):
 
         return reconstructed, latent
 
-# Create dummy autoencoder model for pretraining
+# Dummy autoencoder model for pretraining
 class AEOnly(nn.Module):
     def __init__(self, vocab_size, embed_dim, ae_hidden_dim, seq_len):
         super().__init__()

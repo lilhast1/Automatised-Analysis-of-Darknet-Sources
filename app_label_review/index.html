@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pseudolabel Reviewer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Pseudolabel Review Interface</h1>
+
+        <div class="header-info">
+            <span id="current-index"></span> / <span id="total-entries"></span>
+            <span id="current-file-path"></span>
+        </div>
+
+        <div class="content-and-controls">
+            <div class="html-preview">
+                <h2>File Content Preview</h2>
+                <iframe id="file-content-frame" sandbox="allow-same-origin"></iframe>
+            </div>
+
+            <div class="controls">
+                <h2>Current Label: <span id="current-label-display" class="label-badge"></span></h2>
+                <p>Confidence: <span id="confidence-display"></span></p>
+
+                <h3>Available Labels:</h3>
+                <div id="label-buttons" class="label-button-group">
+                    <!-- Label buttons will be dynamically inserted here -->
+                </div>
+
+                <div class="action-buttons">
+                    <button id="accept-button">Accept & Next</button>
+                    <button id="save-button" class="secondary">Save Reviewed & Quit</button>
+                </div>
+                <p class="instruction">
+                    Click 'Accept & Next' to keep the current label, or choose a new label.
+                </p>
+                <div id="status-message" class="status-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

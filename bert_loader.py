@@ -25,7 +25,7 @@ def tokenize_text(text, max_len=512):
         max_length=max_len,
         return_tensors="pt"
     )
-    return tokens["input_ids"].squeeze(0)
+    return tokens["input_ids"].squeeze(0), tokens["attention_mask"].squeeze(0)
 
 class HTMLDataset(Dataset):
     def __init__(self, file_paths, labels=None, max_len=512):
@@ -39,11 +39,10 @@ class HTMLDataset(Dataset):
     def __getitem__(self, idx):
         path = self.file_paths[idx]
         text = clean_html(path)
-        input_ids = tokenize_text(text, self.max_len)
+        input_ids, attention_mask = tokenize_text(text, self.max_len)
 
         if self.labels is not None:
             label = self.labels[idx]
-            return input_ids, torch.tensor(label, dtype=torch.long)
+            return input_ids, attention_mask, torch.tensor(label, dtype=torch.long) 
         else:
-            return input_ids, path
-            #return input_ids#, torch.tensor(-1, dtype=torch.long)
+            return input_ids, attention_mask, path 
